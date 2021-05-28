@@ -76,51 +76,7 @@
     }
   }
 
-  class TouchTrace extends Trace{
-    constructor(ele) {
-      super(ele);
-      this.initEvents();
-    }
-    initEvents() {
-      this.events.push(...[
-        ["touchstart", this.child],
-        // eslint-disable-next-line no-undef
-        ["touchmove", window],
-        // eslint-disable-next-line no-undef
-        ["touchend", window],
-        // eslint-disable-next-line no-undef
-        ["touchcancel", window]
-      ]);
-    }
-    handleEvent(event) {
-      this.generatePositionFromEvent(event);
-      switch (event.type) {
-      case "touchstart": {
-        this.position.startX = this.position.pageX;
-        this.position.startY = this.position.pageY;
-      }break;
-      case "touchmove": {
-        let moveX = this.position.pageX,
-          moveY = this.position.pageY,
-          deltaX = moveX - this.position.startX,
-          deltaY = moveY - this.position.startY;
-        this.position.startX = moveX;
-        this.position.startY = moveY;
-        this.x = this.x + deltaX;
-        this.y = this.y + deltaY;
-        if(this.y < this.maxY) {
-          this.y = this.maxY;
-        }
-        if(this.y > 0) {
-          this.y = 0;
-        }
-        Action.transform(this.child, this.x, this.y);
-      }break;
-      }
-    }
-  }
-
-  class MouseTrace extends Trace{
+  class PointerTrace extends Trace{
     constructor(ele) {
       super(ele);
       this.initEvents();
@@ -128,32 +84,27 @@
     }
     initEvents() {
       this.events.push(...[
+        ["pointerdown", this.child],
         // eslint-disable-next-line no-undef
-        ["mousedown", this.child],
+        ["pointermove", window],
         // eslint-disable-next-line no-undef
-        ["mousemove", window],
+        ["pointerup", window],
         // eslint-disable-next-line no-undef
-        ["mouseup", window],
-        // eslint-disable-next-line no-undef
-        ["mousecancel", window]
+        ["pointercancel", window]
       ]);
     }
     handleEvent(event) {
       this.generatePositionFromEvent(event);
       switch (event.type) {
-      case "mousedown": {
+      case "pointerdown": {
+        this.position.startX = event.pageX;
+        this.position.startY = event.pageY;
         this.flag = true;
-        this.child.addEventListener("selectstart", (e) => {
-          e.preventDefault();
-        });
-        this.position.startX = this.position.pageX;
-        this.position.startY = this.position.pageY;
       }break;
-      case "mousemove": {
+      case "pointermove": {
         if(!this.flag) {
           return;
         }
-        console.log("move");
         let moveX = this.position.pageX,
           moveY = this.position.pageY,
           deltaX = moveX - this.position.startX,
@@ -170,14 +121,12 @@
         }
         Action.transform(this.child, this.x, this.y);
       }break;
-      case "mouseup": {
-        console.log("mouseup");
+      case "pointerup":
         this.flag = false;
-      }break;
-      case "mousecancel": {
-        console.log("mousecancel");
+        break;
+      case "pointercancel":
         this.flag = false;
-      }break;
+        break;
       }
     }
     generatePositionFromEvent(event) {
@@ -188,10 +137,12 @@
 
   const vib = {
     begin: (ele) => {
-      let touchTrace = new TouchTrace(ele);
-      let mouseTrace = new MouseTrace(ele);
-      touchTrace.listen();
-      mouseTrace.listen();
+      // let touchTrace = new TouchTrace(ele);
+      // let mouseTrace = new MouseTrace(ele);
+      let pointerTrace = new PointerTrace(ele);
+      // touchTrace.listen();
+      // mouseTrace.listen();
+      pointerTrace.listen();
     }
   };
 
