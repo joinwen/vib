@@ -1,9 +1,19 @@
-class PointerTrace {
+import Trace from "./index";
+class PointerTrace extends Trace{
   constructor(ele) {
-    this.ele = ele;
-    this.init();
+    super(ele);
+    this.initEvents();
   }
-  init() {
+  initEvents() {
+    this.events.push(...[
+      "pointerdown",
+      "pointermove",
+      "pointerup",
+      "pointercancel"
+    ]);
+  }
+  handleEvent(event) {
+    this.generatePositionFromEvent(event);
   }
 }
 export default PointerTrace;
