@@ -14,7 +14,6 @@ class MouseTrace extends Trace{
     ]);
   }
   handleEvent(event) {
-    console.log(event);
     this.generatePositionFromEvent(event);
   }
 }
