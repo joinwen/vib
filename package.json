@@ -1,0 +1,29 @@
+{
+  "name": "vib",
+  "version": "1.0.0",
+  "description": "simple scroll",
+  "main": "dist/vib.cjs.js",
+  "module": "dist/vib.esm.js",
+  "browser": "dist/vib.umd.js",
+  "dependencies": {
+    "rollup": "^2.50.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0"
+  },
+  "scripts": {
+    "build": "rollup -c --environment BUILD:production",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "blank"
+  },
+  "keywords": [
+    "simple",
+    "scroll"
+  ],
+  "author": "cywen",
+  "license": "ISC"
+}
