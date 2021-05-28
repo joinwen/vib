@@ -1,4 +1,4 @@
-import {getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils";
+import {getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
 
 /**
  * 处理模板

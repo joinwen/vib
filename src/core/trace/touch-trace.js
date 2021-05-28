@@ -36,7 +36,7 @@ class TouchTrace extends Trace{
       if(this.y > 0) {
         this.y = 0;
       }
-      Action.transform(this.ele, this.x, this.y);
+      Action.transform(this.child, this.x, this.y);
     }break;
     case "touchend":
       break;

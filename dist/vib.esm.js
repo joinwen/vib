@@ -30,34 +30,56 @@ const getWidthAndHeightWithBorder = (ele) => {
   ];
 };
 
-class TouchTrace {
-  constructor(ele) {
-    this.ele = ele;
+/**
+ * 处理模板
+ */
+class Trace {
+  constructor(child) {
+    this.child = child;
+    this.parent = child.parentElement;
     this.init();
   }
   init() {
     this.x = 0;
     this.y = 0;
     this.position = {};
-    this.events = [
+    this.events = [];
+    let [ parentWidth, parentHeight ] = getWidthAndHeight(this.parent),
+      [childWidth, childHeight] = getWidthAndHeightWithBorder(this.child);
+    this.maxY = parentHeight - childHeight;
+    this.maxX = parentWidth - childWidth;
+  }
+  listen() {
+    this.events.forEach(event => {
+      this.child.addEventListener(event, this);
+    });
+  }
+  generatePositionFromEvent(event) {
+    let data = event.touches[0];
+    this.position.pageX = data.pageX;
+    this.position.pageY = data.pageY;
+  }
+}
+
+class TouchTrace extends Trace{
+  constructor(ele) {
+    super(ele);
+    this.initEvents();
+  }
+  initEvents() {
+    this.events.push(...[
       "touchstart",
       "touchmove",
       "touchend",
       "touchcancel"
-    ];
-    let [ parentWidth,parentHeight ] = getWidthAndHeight(this.ele.parentElement),
-      [childWidth, childHeight ] = getWidthAndHeightWithBorder(this.ele);
-    this.maxY = parentHeight - childHeight;
-    this.maxX = parentWidth - childWidth;
+    ]);
   }
   handleEvent(event) {
     this.generatePositionFromEvent(event);
     switch (event.type) {
     case "touchstart": {
-      let startX = this.position.pageX,
-        startY = this.position.pageY;
-      this.position.startX = startX;
-      this.position.startY = startY;
+      this.position.startX = this.position.pageX;
+      this.position.startY = this.position.pageY;
     }break;
     case "touchmove": {
       let moveX = this.position.pageX,
@@ -74,19 +96,9 @@ class TouchTrace {
       if(this.y > 0) {
         this.y = 0;
       }
-      Action.transform(this.ele, this.x, this.y);
+      Action.transform(this.child, this.x, this.y);
     }break;
     }
-  }
-  generatePositionFromEvent(event) {
-    let data = event.touches[0];
-    this.position.pageX = data.pageX;
-    this.position.pageY = data.pageY;
-  }
-  listen() {
-    this.events.forEach(event => {
-      this.ele.addEventListener(event, this);
-    });
   }
 }
 
