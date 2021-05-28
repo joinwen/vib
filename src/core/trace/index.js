@@ -1,4 +1,4 @@
-import {getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
+import {setStyle, getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
 
 /**
  * 处理模板
@@ -8,6 +8,7 @@ class Trace {
     this.child = child;
     this.parent = child.parentElement;
     this.init();
+    this.initStyle();
   }
   init() {
     this.x = 0;
@@ -19,9 +20,12 @@ class Trace {
     this.maxY = parentHeight - childHeight;
     this.maxX = parentWidth - childWidth;
   }
+  initStyle() {
+    setStyle(this.child, {"user-select": "none"});
+  }
   listen() {
     this.events.forEach(event => {
-      this.child.addEventListener(event, this);
+      event[1].addEventListener(event[0], this);
     });
   }
   generatePositionFromEvent(event) {

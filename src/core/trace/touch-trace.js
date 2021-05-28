@@ -8,10 +8,13 @@ class TouchTrace extends Trace{
   }
   initEvents() {
     this.events.push(...[
-      "touchstart",
-      "touchmove",
-      "touchend",
-      "touchcancel"
+      ["touchstart", this.child],
+      // eslint-disable-next-line no-undef
+      ["touchmove", window],
+      // eslint-disable-next-line no-undef
+      ["touchend", window],
+      // eslint-disable-next-line no-undef
+      ["touchcancel", window]
     ]);
   }
   handleEvent(event) {
