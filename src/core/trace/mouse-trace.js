@@ -1,37 +1,21 @@
-import {getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils";
+import Trace from "./index";
 
-class MouseTrace {
+class MouseTrace extends Trace{
   constructor(ele) {
-    this.ele = ele;
-    this.init();
+    super(ele);
+    this.initEvents();
   }
-  init() {
-    this.x = 0;
-    this.y = 0;
-    this.position = {};
-    this.events = [
+  initEvents() {
+    this.events.push(...[
       "mousedown",
       "mousemove",
       "mouseup",
       "mousecancel"
-    ];
-    let [ parentWidth, parentHeight ] = getWidthAndHeight(this.ele.parentElement),
-      [childWidth, childHeihgt] = getWidthAndHeightWithBorder(this.ele);
-    this.maxY = parentHeight - childHeihgt;
-    this.maxX = parentWidth - childWidth;
+    ]);
   }
   handleEvent(event) {
+    console.log(event);
     this.generatePositionFromEvent(event);
-  }
-  generatePositionFromEvent(event) {
-    let data = event.touches[0];
-    this.position.pageX = data.pageX;
-    this.position.pageY = data.pageY;
-  }
-  listen() {
-    this.events.forEach(event => {
-      this.ele.addEventListener(event, this);
-    });
   }
 }
 export default MouseTrace;

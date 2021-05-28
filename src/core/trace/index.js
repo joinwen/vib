@@ -12,6 +12,7 @@ class Trace {
   init() {
     this.x = 0;
     this.y = 0;
+    this.position = {};
     this.events = [];
     let [ parentWidth, parentHeight ] = getWidthAndHeight(this.parent),
       [childWidth, childHeight] = getWidthAndHeightWithBorder(this.child);
@@ -22,6 +23,11 @@ class Trace {
     this.events.forEach(event => {
       this.child.addEventListener(event, this);
     });
+  }
+  generatePositionFromEvent(event) {
+    let data = event.touches[0];
+    this.position.pageX = data.pageX;
+    this.position.pageY = data.pageY;
   }
 }
 export default Trace;

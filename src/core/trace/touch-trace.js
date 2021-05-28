@@ -1,25 +1,18 @@
 import Action from "../action/index";
-import {getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
+import Trace from "./index";
 
-class TouchTrace {
+class TouchTrace extends Trace{
   constructor(ele) {
-    this.ele = ele;
-    this.init();
+    super(ele);
+    this.initEvents();
   }
-  init() {
-    this.x = 0;
-    this.y = 0;
-    this.position = {};
-    this.events = [
+  initEvents() {
+    this.events.push(...[
       "touchstart",
       "touchmove",
       "touchend",
       "touchcancel"
-    ];
-    let [ parentWidth,parentHeight ] = getWidthAndHeight(this.ele.parentElement),
-      [childWidth, childHeight ] = getWidthAndHeightWithBorder(this.ele);
-    this.maxY = parentHeight - childHeight;
-    this.maxX = parentWidth - childWidth;
+    ]);
   }
   handleEvent(event) {
     this.generatePositionFromEvent(event);
@@ -50,16 +43,6 @@ class TouchTrace {
     case "touchcancel":
       break;
     }
-  }
-  generatePositionFromEvent(event) {
-    let data = event.touches[0];
-    this.position.pageX = data.pageX;
-    this.position.pageY = data.pageY;
-  }
-  listen() {
-    this.events.forEach(event => {
-      this.ele.addEventListener(event, this);
-    });
   }
 }
 export default TouchTrace;
