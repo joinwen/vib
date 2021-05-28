@@ -1,10 +1,19 @@
-class WheelTrace {
+import Trace from "./index";
+
+class WheelTrace extends Trace{
   constructor(ele) {
-    this.ele = ele;
-    this.init();
+    super(ele);
+    this.initEvents();
   }
-  init() {
-    
+  initEvents() {
+    this.events.push(...[
+      "wheel",
+      "mousewheel",
+      "DOMMouseScroll"
+    ]);
+  }
+  handleEvent(event) {
+    this.generatePositionFromEvent(event);
   }
 }
 export default WheelTrace;
