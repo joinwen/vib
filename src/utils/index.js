@@ -32,7 +32,18 @@ const getWidthAndHeightWithBorder = (ele) => {
     getHeightWithBorder(ele)
   ];
 };
+
+// eslint-disable-next-line no-undef
+const raf = window.requestAnimationFrame || function(callback) {
+  // eslint-disable-next-line no-undef
+  window.setTimeout((callback), 17);
+};
+// eslint-disable-next-line no-undef
+const cancelRaf = window.cancelAnimationFrame || clearTimeout;
+
 export {
+  raf,
+  cancelRaf,
   getStyle,
   setStyle,
   getWidth,

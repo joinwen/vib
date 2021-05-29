@@ -13,6 +13,8 @@ class Trace {
   init() {
     this.x = 0;
     this.y = 0;
+    this.oldX = 0;
+    this.oldY = 0;
     this.position = {};
     this.events = [];
     let [ parentWidth, parentHeight ] = getWidthAndHeight(this.parent),

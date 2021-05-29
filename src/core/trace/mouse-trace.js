@@ -5,7 +5,7 @@ class MouseTrace extends Trace{
   constructor(ele) {
     super(ele);
     this.initEvents();
-    this.flag = false;
+    this.flag = 3;
   }
   initEvents() {
     this.events.push(...[
@@ -23,17 +23,20 @@ class MouseTrace extends Trace{
     this.generatePositionFromEvent(event);
     switch (event.type) {
     case "mousedown": {
-      this.flag = true;
+      console.log("mousedown");
+      this.flag = 1;
       this.child.addEventListener("selectstart", (e) => {
         e.preventDefault();
       });
       this.position.startX = this.position.pageX;
       this.position.startY = this.position.pageY;
+      this.startTime = Date.now();
     }break;
     case "mousemove": {
-      if(!this.flag) {
+      if(this.flag === 3) {
         return;
       }
+      this.flag = 2;
       console.log("move");
       let moveX = this.position.pageX,
         moveY = this.position.pageY,
@@ -41,23 +44,33 @@ class MouseTrace extends Trace{
         deltaY = moveY - this.position.startY;
       this.position.startX = moveX;
       this.position.startY = moveY;
-      this.x = this.x + deltaX;
-      this.y = this.y + deltaY;
+      this.x += deltaX;
+      this.y += deltaY;
       if(this.y < this.maxY) {
         this.y = this.maxY;
       }
       if(this.y > 0) {
         this.y = 0;
       }
-      Action.transform(this.child, this.x, this.y);
+      Action.transform(this.child, this.y);
+      if(Date.now() - this.startTime > 300) {
+        this.startTime = Date.now();
+      }
     }break;
     case "mouseup": {
       console.log("mouseup");
-      this.flag = false;
+      if(this.flag === 2) {
+        this.flag = 3;
+        let [y, time] = Action.momentum(this.position.startY, this.y, this.startTime, this.maxY);
+        console.log(y);
+        Action.transformWithAnimation(this.child, y, this.y, time);
+        this.y = y;
+      }
+      this.flag = 3;
     }break;
     case "mousecancel": {
       console.log("mousecancel");
-      this.flag = false;
+      this.flag = 3;
     }break;
     }
   }
