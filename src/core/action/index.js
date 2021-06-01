@@ -19,10 +19,10 @@ class Action {
   /**
    *
    * @param x0 起点位移
-   * @param v0 起点速度
+   * @param x1 终点位移
    * @param a 加速度
    */
-  static momentum(x0, x1, startTime, max, a = 0.006) {
+  static momentum(x0, x1, startTime, max, a = 0.0006) {
     console.log(x0, x1);
     let time = Date.now() - startTime,
       distance = x1 - x0,

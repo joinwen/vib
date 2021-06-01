@@ -3,9 +3,8 @@ const getStyle = (ele, attr) => {
   return document.defaultView.getComputedStyle(ele)[attr];
 };
 const setStyle = (ele, data) => {
-  let attr = Object.keys(data)[0],
-    value = data[attr];
-  ele.style[attr] = value;
+  let attr = Object.keys(data)[0];
+  ele.style[attr] = data[attr];
 };
 const getWidth = (ele) => {
   return ele.clientWidth;

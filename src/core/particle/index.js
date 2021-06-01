@@ -1,4 +1,4 @@
-import {setStyle, getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils";
+import {setStyle, getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
 
 class Particle {
   constructor(child) {
@@ -11,8 +11,14 @@ class Particle {
       [childWidth, childHeight] = getWidthAndHeightWithBorder(this.child);
     this.maxY = parentHeight - childHeight;
     this.maxX = parentWidth - childWidth;
-    this.x = 0;
-    this.y = 0;
+    this.x0 = 0;  // x 起点
+    this.y0 = 0;  // y 起点
+    this.x1 = 0;  // x 终点
+    this.y1 = 0;  // y 终点
+    this.startX = 0;  // 当前 x 起点
+    this.startY = 0;  // 当前 y 起点
+    this.flag = 0;  // not be traced
+    this.startTime = Date.now();  // 开始时间
   }
   initStyle() {
     setStyle(this.child, {"user-select": "none"});

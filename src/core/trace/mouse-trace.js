@@ -1,11 +1,9 @@
-import Action from "../action/index";
 import Trace from "./index";
 
 class MouseTrace extends Trace{
-  constructor(ele) {
-    super(ele);
+  constructor(p) {
+    super(p);
     this.initEvents();
-    this.flag = 3;
   }
   initEvents() {
     this.events.push(...[
@@ -20,7 +18,6 @@ class MouseTrace extends Trace{
     ]);
   }
   handleEvent(event) {
-    this.generatePositionFromEvent(event);
     switch (event.type) {
     case "mousedown": {
       console.log("mousedown");
@@ -28,43 +25,50 @@ class MouseTrace extends Trace{
       this.child.addEventListener("selectstart", (e) => {
         e.preventDefault();
       });
-      this.position.startX = this.position.pageX;
-      this.position.startY = this.position.pageY;
+      this.startX = event.pageX;
+      this.startY = event.pageY;
+      this.x0 = this.x1;
+      this.y0 = this.y1;
       this.startTime = Date.now();
     }break;
     case "mousemove": {
-      if(this.flag === 3) {
+      if([0,3].includes(this.flag)) {
         return;
       }
       this.flag = 2;
       console.log("move");
-      let moveX = this.position.pageX,
-        moveY = this.position.pageY,
-        deltaX = moveX - this.position.startX,
-        deltaY = moveY - this.position.startY;
-      this.position.startX = moveX;
-      this.position.startY = moveY;
-      this.x += deltaX;
-      this.y += deltaY;
-      if(this.y < this.maxY) {
-        this.y = this.maxY;
+      let moveX = event.pageX,
+        moveY = event.pageY,
+        deltaX = moveX - this.startX,
+        deltaY = moveY - this.startY;
+      this.startX = moveX;
+      this.startY = moveY;
+
+      let x1 = this.x1 + deltaX;
+      let y1 = this.y1 + deltaY;
+      console.log(y1);
+      if(y1 < this.maxY) {
+        y1 = this.maxY;
       }
-      if(this.y > 0) {
-        this.y = 0;
+      if(y1 > 0) {
+        y1 = 0;
       }
-      Action.transform(this.child, this.y);
+      this.translate(y1);
       if(Date.now() - this.startTime > 300) {
         this.startTime = Date.now();
+        this.x0 = this.x1;
+        this.y0 = this.y1;
       }
     }break;
     case "mouseup": {
       console.log("mouseup");
       if(this.flag === 2) {
         this.flag = 3;
-        let [y, time] = Action.momentum(this.position.startY, this.y, this.startTime, this.maxY);
-        console.log(y);
-        Action.transformWithAnimation(this.child, y, this.y, time);
-        this.y = y;
+        if(Date.now() - this.startTime < 300) {
+          let [y0, y1, time] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
+          console.log(y1);
+          this.animate(y0, y1, time);
+        }
       }
       this.flag = 3;
     }break;
@@ -73,10 +77,6 @@ class MouseTrace extends Trace{
       this.flag = 3;
     }break;
     }
-  }
-  generatePositionFromEvent(event) {
-    this.position.pageX = event.pageX;
-    this.position.pageY = event.pageY;
   }
 }
 export default MouseTrace;

@@ -1,39 +1,77 @@
-import {setStyle, getWidthAndHeight, getWidthAndHeightWithBorder} from "../../utils/index";
-
+import Animation from "../animation/index";
 /**
  * 处理模板
  */
-class Trace {
-  constructor(child) {
-    this.child = child;
-    this.parent = child.parentElement;
-    this.init();
-    this.initStyle();
-  }
-  init() {
-    this.x = 0;
-    this.y = 0;
-    this.oldX = 0;
-    this.oldY = 0;
-    this.position = {};
+class Trace extends Animation{
+  constructor(p) {
+    super();
+    this.p = p;
     this.events = [];
-    let [ parentWidth, parentHeight ] = getWidthAndHeight(this.parent),
-      [childWidth, childHeight] = getWidthAndHeightWithBorder(this.child);
-    this.maxY = parentHeight - childHeight;
-    this.maxX = parentWidth - childWidth;
   }
-  initStyle() {
-    setStyle(this.child, {"user-select": "none"});
+  get child() {
+    return this.p.child;
+  }
+  get parent() {
+    return this.p.parent;
+  }
+  get maxY() {
+    return this.p.maxY;
+  }
+  get maxX() {
+    return this.p.maxX;
+  }
+  set flag(value) {
+    this.p.flag = value;
+  }
+  get flag() {
+    return this.p.flag;
+  }
+  set x0(value) {
+    this.p.x0 = value;
+  }
+  get x0() {
+    return this.p.x0;
+  }
+  set x1(value) {
+    this.p.x1 = value;
+  }
+  get x1() {
+    return this.p.x1;
+  }
+  set y0(value) {
+    this.p.y0 = value;
+  }
+  get y0() {
+    return this.p.y0;
+  }
+  set y1(value) {
+    this.p.y1 = value;
+  }
+  get y1() {
+    return this.p.y1;
+  }
+  set startX(value) {
+    this.p.startX = value;
+  }
+  get startX() {
+    return this.p.startX;
+  }
+  set startY(value) {
+    this.p.startY = value;
+  }
+  get startY() {
+    return this.p.startY;
+  }
+  set startTime(value) {
+    this.p.startTime = value;
+  }
+  get startTime() {
+    return this.p.startTime;
   }
   listen() {
     this.events.forEach(event => {
       event[1].addEventListener(event[0], this);
     });
-  }
-  generatePositionFromEvent(event) {
-    let data = event.touches[0];
-    this.position.pageX = data.pageX;
-    this.position.pageY = data.pageY;
   }
 }
 export default Trace;
