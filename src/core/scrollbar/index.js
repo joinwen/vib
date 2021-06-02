@@ -10,9 +10,10 @@ class Scrollbar {
     this.ratioY = parentHeight / childHeight;
     this.height = this.ratioY * 100 + "%";
     this.width = this.ratioX * 100 + "%";
-    this.buildScrollbar(parent);
+    this.initDom(parent);
+    this.initEvents();
   }
-  buildScrollbar(parent) {
+  initDom(parent) {
     let parentStyle = {
         position: "absolute",
         top: 0,
@@ -39,6 +40,17 @@ class Scrollbar {
     parent.append(div.firstChild);
     // eslint-disable-next-line no-undef
     this.ele = document.querySelector(".scroller-child");
+  }
+  initEvents() {
+    this.events = [
+      [["mousedown","pointerdown","touchstart"],this.ele],
+      // eslint-disable-next-line no-undef
+      [["mousemove","pointermove","touchmove"], window],
+      // eslint-disable-next-line no-undef
+      [["mouseup","pointerup","touchend"], window],
+      // eslint-disable-next-line no-undef
+      [["mousecancel","pointercancel","touchcancel"], window]
+    ];
   }
   updatePosition(value) {
     value = this.ratioY * value;
