@@ -7,21 +7,22 @@ class Animation {
    * @param x1 终点
    * @param duration 动画时长
    */
-  animate(x0, x1, duration, strategy = "easeOutQuint") {
+  animate([x0, x1], [y0, y1], duration, strategy = "easeOutQuint") {
     let start = Date.now(),
       strategyFn = STRATEGY_LIST[strategy];
     let fn = () => {
       let passed = Date.now() - start,
         progress = this.round(strategyFn(passed / duration), 6),
         id = null,
-        delta = x1 - x0;
+        deltaX = x1 - x0,
+        deltaY = y1 - y0;
       console.log(progress);
       if(this.flag === 3) {
         if(progress < 1){
-          this.translate(x0 + delta * progress);
+          this.translate(x0 + deltaX * progress,y0 + deltaY * progress);
           id = raf(fn);
         } else {
-          this.translate(x0 + delta);
+          this.translate(x0 + deltaX, y0 + deltaY * progress);
           cancelRaf(id);
         }
       }
@@ -31,10 +32,11 @@ class Animation {
   round(number, precision) {
     return Math.round(+number + "e" + precision) / Math.pow(10, precision);
   }
-  translate(value) {
-    this.y1 = Math.round(value);
+  translate(horValue, verValue) {
+    this.y1 = Math.round(verValue);
+    this.x1 = Math.round(horValue);
     setStyle(this.child, {
-      transform: `translateY(${this.y1}px)`
+      transform: `translateY(${this.y1}px) translateX(${this.x1}px)`
     });
   }
 

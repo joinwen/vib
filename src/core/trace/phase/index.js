@@ -30,13 +30,9 @@ class Phase extends Animation{
 
     let x1 = this.x1 + deltaX;
     let y1 = this.y1 + deltaY;
-    if(y1 < this.maxY) {
-      y1 = this.maxY;
-    }
-    if(y1 > 0) {
-      y1 = 0;
-    }
-    this.translate(y1);
+    y1 = y1 < this.maxY ? this.maxY : y1 > 0 ? 0 : y1;
+    x1 = x1 < this.maxX ? this.maxX : x1 > 0 ? 0 : x1;
+    this.translate(x1, y1);
     if(Date.now() - this.startTime > 300) {
       this.startTime = Date.now();
       this.x0 = this.x1;
@@ -48,8 +44,10 @@ class Phase extends Animation{
     if(this.flag === 2) {
       this.flag = 3;
       if(Date.now() - this.startTime < 300) {
-        let [y0, y1, time] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
-        this.animate(y0, y1, time);
+        let [y0, y1, time1] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
+        let [x0, x1, time2] = this.momentum(this.x0, this.x1, this.startTime, this.maxX);
+        let time =  Math.max(time1, time2);
+        this.animate([x0,x1],[y0,y1], time);
       }
     }
     this.flag = 3;
