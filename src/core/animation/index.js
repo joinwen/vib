@@ -16,7 +16,7 @@ class Animation {
         id = null,
         deltaX = x1 - x0,
         deltaY = y1 - y0;
-      console.log(progress);
+
       if(this.flag === 3) {
         if(progress < 1){
           this.translate(x0 + deltaX * progress,y0 + deltaY * progress);
