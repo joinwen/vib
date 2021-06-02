@@ -16,7 +16,7 @@ class Animation {
         id = null,
         delta = x1 - x0;
       console.log(progress);
-      if(progress < 1){
+      if(progress < 1 && this.flag === 3){
         this.translate(x0 + delta * progress);
         id = raf(fn);
       } else {
@@ -49,9 +49,9 @@ class Animation {
     let time, distance, speed, x, t;
     time = Date.now() - startTime;  // 时间
     distance = x1 - x0;             // 位移
-    speed = Math.abs(distance) / time;  // 平均速度
-    x = x1 + (speed * speed) / (2 * a) * (distance < 0 ? -1 : 1);   // 以 a 加速度的匀减速到 0 的位移
-    t = speed / a;  // 匀减速运动 时间
+    speed = Math.abs(distance) / time;  // 平均速度 => 起始速度
+    x = x1 + (speed * speed) / (2 * a) * (distance < 0 ? -1 : 1);   // 以a为加速度匀减速到0的位移
+    t = speed / a;  // 匀减速运动的时间
     if(x < max) {
       x = max;
       distance = Math.abs(x - x1);
