@@ -16,12 +16,14 @@ class Animation {
         id = null,
         delta = x1 - x0;
       console.log(progress);
-      if(progress < 1 && this.flag === 3){
-        this.translate(x0 + delta * progress);
-        id = raf(fn);
-      } else {
-        this.translate(x0 + delta);
-        cancelRaf(id);
+      if(this.flag === 3) {
+        if(progress < 1){
+          this.translate(x0 + delta * progress);
+          id = raf(fn);
+        } else {
+          this.translate(x0 + delta);
+          cancelRaf(id);
+        }
       }
     };
     fn();
