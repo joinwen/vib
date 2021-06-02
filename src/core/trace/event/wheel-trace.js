@@ -1,8 +1,7 @@
-import Trace from "./index";
-import Action from "../action/index";
+import Trace from "../index";
 class WheelTrace extends Trace{
-  constructor(ele) {
-    super(ele);
+  constructor(p) {
+    super(p);
     this.initEvents();
   }
   initEvents() {
@@ -13,26 +12,30 @@ class WheelTrace extends Trace{
     ]);
   }
   handleEvent(event) {
-    this.generatePositionFromEvent(event);
+    event = this.unifyEvent(event);
     switch (event.type) {
     case "wheel": {
-      this.x += this.position.deltaX;
-      this.y += this.position.deltaY;
-      if(this.y < this.maxY) {
-        this.y = this.maxY;
+      let x1 = this.x1 + (-event.deltaX),
+        y1 = this.y1 + (-event.deltaY);
+      if(y1 < this.maxY) {
+        y1 = this.maxY;
       }
-      if(this.y > 0) {
-        this.y = 0;
+      if(y1 > 0) {
+        y1 = 0;
       }
-      Action.transform(this.child, this.x, this.y);
+      this.translate(y1);
+      // if(Date.now() - this.startTime > 300) {
+      //   this.startTime = Date.now();
+      //   this.x0 = this.x1;
+      //   this.y0 = this.y1;
+      // }
     }break;
     }
   }
-  generatePositionFromEvent(event) {
+  unifyEvent(event) {
     // 1. 标准 鼠标滚轮事件
     if("deltaX" in event) {
-      this.position.deltaX = -event.deltaX;
-      this.position.deltaY = -event.deltaY;
+      console.log(event);
     } else if("wheelDeltax" in event) {
       // 2. mousewheel 事件
     } else if("wheelDelta" in event) {
@@ -40,6 +43,7 @@ class WheelTrace extends Trace{
     } else if("detail" in event) {
       // 3. DOMMouseScroll 事件
     }
+    return event;
   }
 }
 export default WheelTrace;

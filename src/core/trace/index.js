@@ -1,8 +1,9 @@
-import Animation from "../animation/index";
 /**
  * 处理模板
  */
-class Trace extends Animation{
+import Phase from "./phase/index";
+
+class Trace extends Phase{
   constructor(p) {
     super();
     this.p = p;

@@ -126,12 +126,14 @@
           id = null,
           delta = x1 - x0;
         console.log(progress);
-        if(progress < 1){
-          this.translate(x0 + delta * progress);
-          id = raf(fn);
-        } else {
-          this.translate(x0 + delta);
-          cancelRaf(id);
+        if(this.flag === 3) {
+          if(progress < 1){
+            this.translate(x0 + delta * progress);
+            id = raf(fn);
+          } else {
+            this.translate(x0 + delta);
+            cancelRaf(id);
+          }
         }
       };
       fn();
@@ -159,9 +161,9 @@
       let time, distance, speed, x, t;
       time = Date.now() - startTime;  // 时间
       distance = x1 - x0;             // 位移
-      speed = Math.abs(distance) / time;  // 平均速度
-      x = x1 + (speed * speed) / (2 * a) * (distance < 0 ? -1 : 1);   // 以 a 加速度的匀减速到 0 的位移
-      t = speed / a;  // 匀减速运动 时间
+      speed = Math.abs(distance) / time;  // 平均速度 => 起始速度
+      x = x1 + (speed * speed) / (2 * a) * (distance < 0 ? -1 : 1);   // 以a为加速度匀减速到0的位移
+      t = speed / a;  // 匀减速运动的时间
       if(x < max) {
         x = max;
         distance = Math.abs(x - x1);
@@ -180,10 +182,72 @@
     }
   }
 
+  class Phase extends Animation{
+    unifyEvent(event) {
+      return event;
+    }
+    handleStart(event) {
+      console.log("**start**");
+      this.flag = 1;
+      this.child.addEventListener("selectstart", (e) => {
+        e.preventDefault();
+      });
+      this.startX = event.pageX;
+      this.startY = event.pageY;
+      this.x0 = this.x1;
+      this.y0 = this.y1;
+      this.startTime = Date.now();
+    }
+    handleGoing(event) {
+      if([0,3].includes(this.flag)) {
+        return;
+      }
+      this.flag = 2;
+      console.log("**going**");
+      let moveX = event.pageX,
+        moveY = event.pageY,
+        deltaX = moveX - this.startX,
+        deltaY = moveY - this.startY;
+      this.startX = moveX;
+      this.startY = moveY;
+
+      this.x1 + deltaX;
+      let y1 = this.y1 + deltaY;
+      if(y1 < this.maxY) {
+        y1 = this.maxY;
+      }
+      if(y1 > 0) {
+        y1 = 0;
+      }
+      this.translate(y1);
+      if(Date.now() - this.startTime > 300) {
+        this.startTime = Date.now();
+        this.x0 = this.x1;
+        this.y0 = this.y1;
+      }
+    }
+    handleStop() {
+      console.log("**stop**");
+      if(this.flag === 2) {
+        this.flag = 3;
+        if(Date.now() - this.startTime < 300) {
+          let [y0, y1, time] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
+          this.animate(y0, y1, time);
+        }
+      }
+      this.flag = 3;
+    }
+    handleCancel() {
+      console.log("**cancel**");
+      this.flag = 3;
+    }
+  }
+
   /**
    * 处理模板
    */
-  class Trace extends Animation{
+
+  class Trace extends Phase{
     constructor(p) {
       super();
       this.p = p;
@@ -274,68 +338,69 @@
       ]);
     }
     handleEvent(event) {
+      event = super.unifyEvent(event);
       switch (event.type) {
       case "mousedown": {
-        console.log("mousedown");
-        this.flag = 1;
-        this.child.addEventListener("selectstart", (e) => {
-          e.preventDefault();
-        });
-        this.startX = event.pageX;
-        this.startY = event.pageY;
-        this.x0 = this.x1;
-        this.y0 = this.y1;
-        this.startTime = Date.now();
+        this.handleStart(event);
       }break;
       case "mousemove": {
-        if([0,3].includes(this.flag)) {
-          return;
-        }
-        this.flag = 2;
-        console.log("move");
-        let moveX = event.pageX,
-          moveY = event.pageY,
-          deltaX = moveX - this.startX,
-          deltaY = moveY - this.startY;
-        this.startX = moveX;
-        this.startY = moveY;
-
-        this.x1 + deltaX;
-        let y1 = this.y1 + deltaY;
-        console.log(y1);
-        if(y1 < this.maxY) {
-          y1 = this.maxY;
-        }
-        if(y1 > 0) {
-          y1 = 0;
-        }
-        this.translate(y1);
-        if(Date.now() - this.startTime > 300) {
-          this.startTime = Date.now();
-          this.x0 = this.x1;
-          this.y0 = this.y1;
-        }
+        this.handleGoing(event);
       }break;
       case "mouseup": {
-        console.log("mouseup");
-        if(this.flag === 2) {
-          this.flag = 3;
-          if(Date.now() - this.startTime < 300) {
-            let [y0, y1, time] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
-            console.log(y1);
-            this.animate(y0, y1, time);
-          }
-        }
-        this.flag = 3;
+        this.handleStop();
       }break;
       case "mousecancel": {
-        console.log("mousecancel");
-        this.flag = 3;
+        this.handleCancel();
       }break;
       }
     }
   }
 
+  class TouchTrace extends Trace{
+    constructor(p) {
+      super(p);
+      this.initEvents();
+    }
+    initEvents() {
+      this.events.push(...[
+        ["touchstart", this.child],
+        // eslint-disable-next-line no-undef
+        ["touchmove", window],
+        // eslint-disable-next-line no-undef
+        ["touchend", window],
+        // eslint-disable-next-line no-undef
+        ["touchcancel", window]
+      ]);
+    }
+    handleEvent(event) {
+      event = this.unifyEvent(event);
+      switch (event.type) {
+      case "touchstart": {
+        this.handleStart(event);
+      }break;
+      case "touchmove": {
+        this.handleGoing(event);
+      }break;
+      case "touchend": {
+        this.handleStop();
+      }break;
+      case "touchcancel": {
+        this.handleCancel();
+      }break;
+      }
+    }
+    unifyEvent(event) {
+      if(event.touches && event.touches[0]) {
+        event.pageX = event.touches[0].pageX;
+        event.pageY = event.touches[0].pageY;
+      }
+      return event;
+    }
+  }
+
+  /**
+   * Particle: 粒子
+   */
   class Particle {
     constructor(child) {
       this.child = child;
@@ -353,7 +418,7 @@
       this.y1 = 0;  // y 终点
       this.startX = 0;  // 当前 x 起点
       this.startY = 0;  // 当前 y 起点
-      this.flag = 0;  // not be traced
+      this.flag = 0;  // 事件处理阶段，默认 0，not be traced
       this.startTime = Date.now();  // 开始时间
     }
     initStyle() {
@@ -361,11 +426,94 @@
     }
   }
 
+  class PointerTrace extends Trace{
+    constructor(p) {
+      super(p);
+      this.initEvents();
+    }
+    initEvents() {
+      this.events.push(...[
+        ["pointerdown", this.child],
+        // eslint-disable-next-line no-undef
+        ["pointermove", window],
+        // eslint-disable-next-line no-undef
+        ["pointerup", window],
+        // eslint-disable-next-line no-undef
+        ["pointercancel", window]
+      ]);
+    }
+    handleEvent(event) {
+      event = super.unifyEvent(event);
+      switch (event.type) {
+      case "pointerdown": {
+        this.handleStart(event);
+      }break;
+      case "pointermove": {
+        this.handleGoing(event);
+      }break;
+      case "pointerup": {
+        this.handleStop();
+      }break;
+      case "pointercancel": {
+        this.handleCancel();
+      }break;
+      }
+    }
+  }
+
+  class WheelTrace extends Trace{
+    constructor(p) {
+      super(p);
+      this.initEvents();
+    }
+    initEvents() {
+      this.events.push(...[
+        ["wheel", this.child],
+        ["mousewheel", this.child],
+        ["DOMMouseScroll", this.child]
+      ]);
+    }
+    handleEvent(event) {
+      event = this.unifyEvent(event);
+      switch (event.type) {
+      case "wheel": {
+        this.x1 + (-event.deltaX);
+          let y1 = this.y1 + (-event.deltaY);
+        if(y1 < this.maxY) {
+          y1 = this.maxY;
+        }
+        if(y1 > 0) {
+          y1 = 0;
+        }
+        this.translate(y1);
+        // if(Date.now() - this.startTime > 300) {
+        //   this.startTime = Date.now();
+        //   this.x0 = this.x1;
+        //   this.y0 = this.y1;
+        // }
+      }break;
+      }
+    }
+    unifyEvent(event) {
+      // 1. 标准 鼠标滚轮事件
+      if("deltaX" in event) {
+        console.log(event);
+      }
+      return event;
+    }
+  }
+
   const vib = {
     begin: (ele) => {
       let p = new Particle(ele);
-      let mouseTrace = new MouseTrace(p);
+      let mouseTrace = new MouseTrace(p),
+        touchTrace = new TouchTrace(p),
+        wheelTrace = new WheelTrace(p);
+        new PointerTrace(p);
       mouseTrace.listen();
+      touchTrace.listen();
+      wheelTrace.listen();
+      // pointerTrace.listen();
     }
   };
 
