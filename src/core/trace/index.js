@@ -15,6 +15,9 @@ class Trace extends Phase{
   get parent() {
     return this.p.parent;
   }
+  get scrollbar() {
+    return this.p.scrollbar;
+  }
   get maxY() {
     return this.p.maxY;
   }

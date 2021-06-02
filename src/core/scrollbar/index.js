@@ -1,4 +1,4 @@
-import {getWidthAndHeight, getWidthAndHeightWithBorder, style2String} from "../../utils/index";
+import {getWidthAndHeight, getWidthAndHeightWithBorder, setStyle, style2String} from "../../utils/index";
 
 class Scrollbar {
   constructor(p) {
@@ -6,8 +6,10 @@ class Scrollbar {
       child = p.child,
       [parentWidth, parentHeight ] =getWidthAndHeight(parent),
       [childWidth, childHeight] = getWidthAndHeightWithBorder(child);
-    this.height = (parentHeight / childHeight) * 100 + "%";
-    this.width = (parentWidth / childWidth ) * 100 + "%";
+    this.ratioX = parentWidth / childWidth;
+    this.ratioY = parentHeight / childHeight;
+    this.height = this.ratioY * 100 + "%";
+    this.width = this.ratioX * 100 + "%";
     this.buildScrollbar(parent);
   }
   buildScrollbar(parent) {
@@ -35,6 +37,14 @@ class Scrollbar {
              </div>`;
     div.innerHTML = html;
     parent.append(div.firstChild);
+    // eslint-disable-next-line no-undef
+    this.ele = document.querySelector(".scroller-child");
+  }
+  updatePosition(value) {
+    value = this.ratioY * value;
+    setStyle(this.ele,{
+      top: `${-value}px`
+    });
   }
 }
 export default Scrollbar;

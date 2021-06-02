@@ -23,7 +23,7 @@ class Particle {
     this.startY = 0;  // 当前 y 起点
     this.flag = 0;  // 事件处理阶段，默认 0，not be traced
     this.startTime = Date.now();  // 开始时间
-    this.scrollBar = new Scrollbar(this);   // 滚动条
+    this.scrollbar = new Scrollbar(this);   // 滚动条
   }
   initStyle() {
     setStyle(this.child, {"user-select": "none"});

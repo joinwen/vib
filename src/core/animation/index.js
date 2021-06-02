@@ -35,6 +35,7 @@ class Animation {
   translate(horValue, verValue) {
     this.y1 = Math.round(verValue);
     this.x1 = Math.round(horValue);
+    this.scrollbar.updatePosition(this.y1);
     setStyle(this.child, {
       transform: `translateY(${this.y1}px) translateX(${this.x1}px)`
     });
