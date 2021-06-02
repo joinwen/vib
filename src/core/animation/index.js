@@ -22,7 +22,7 @@ class Animation {
           this.translate(x0 + deltaX * progress,y0 + deltaY * progress);
           id = raf(fn);
         } else {
-          this.translate(x0 + deltaX, y0 + deltaY * progress);
+          this.translate(x0 + deltaX, y0 + deltaY);
           cancelRaf(id);
         }
       }

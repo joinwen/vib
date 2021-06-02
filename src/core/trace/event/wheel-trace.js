@@ -20,11 +20,6 @@ class WheelTrace extends Trace{
       y1 = y1 < this.maxY ? this.maxY : y1 > 0 ? 0 : y1;
       x1 = x1 < this.maxX ? this.maxX : x1 > 0 ? 0 : x1;
       this.translate(x1, y1);
-      // if(Date.now() - this.startTime > 300) {
-      //   this.startTime = Date.now();
-      //   this.x0 = this.x1;
-      //   this.y0 = this.y1;
-      // }
     }break;
     }
   }
