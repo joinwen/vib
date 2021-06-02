@@ -32,6 +32,12 @@ const getWidthAndHeightWithBorder = (ele) => {
   ];
 };
 
+const style2String = (style) => {
+  return Object.keys(style).reduce((prev,next) => {
+    return prev + `${next}: ${style[next]};`;
+  },"");
+};
+
 // eslint-disable-next-line no-undef
 const raf = window.requestAnimationFrame || function(callback) {
   // eslint-disable-next-line no-undef
@@ -41,6 +47,7 @@ const raf = window.requestAnimationFrame || function(callback) {
 const cancelRaf = window.cancelAnimationFrame || clearTimeout;
 
 export {
+  style2String,
   raf,
   cancelRaf,
   getStyle,
