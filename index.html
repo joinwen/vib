@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Trace</title>
+  <script src="./vib.umd.js"></script>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    .wrapper {
+      position: absolute;
+      width: 100%;
+      top: 100px;
+      bottom: 100px;
+      overflow: hidden;
+      background: aliceblue;
+    }
+    .box {
+      width: 100%;
+      padding: 1rem;
+      background-color: antiquewhite;
+      box-sizing: border-box;
+      line-height: 2;
+      border-top: 2px dashed yellowgreen;
+      border-bottom: 2px dashed yellowgreen;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="box">
+  </div>
+</div>
+<script>
+  let box = document.querySelector(".box"),
+    p = `
+          <p>1. Ave Maria, Madre di Dio</p>
+          <p>2. Sia santificato il tuo nome</p>
+          <p>3. Sia fatta la tua volontà</p>
+          <p>4. Amen</p>
+          <p>5. Ave Maria, grazia ricevuta per la mia famiglia</p>
+          <p>6. Un risentito e un amorevole duemila</p>
+          <p>7. Grazia, chiedo a te, mio Signore divino</p>
+          <p>8. In questo giorno di grazia</p>
+          <p>9. Prego per te, Ave Maria</p>
+          <p>10. Piena di grazia, il Signore è con te</p>
+          <p>11. Sia fatta la Tua volontà</p>
+          <p>12. Così in cielo e così in terra</p>
+          <p>13. In nome del Padre del Figliolo e ello Spirito Santo amen</p>
+          <p>14. 微凉的晨露 沾湿黑礼服</p>
+          <p>15. 石板路有雾 父在低诉</p>
+          <p>16. 无奈的觉悟 只能更残酷</p>
+          <p>17. 一切都为了通往圣堂的路</p>
+          <p>18. 吹不散的雾 隐没了意图</p>
+          <p>19. 谁轻柔踱步 停住</p>
+          <p>20. 还来不及哭穿过的子弹就带走温度</p>
+          <p>21. 我们每个人都有罪 犯着不同的罪</p>
+          <p>22. 我能决定谁对 谁又该要沉睡</p>
+          <p>23. 争论不能解决 在永无止境的夜</p>
+          <p>24. 关掉你的嘴 唯一的恩惠</p>
+          <p>25. 挡在前面的人都有罪 后悔也无路可退</p>
+          <p>26. 以父之名判决 那感觉没有适合字汇</p>
+          <p>27. 就像边笑边掉泪 凝视着完全的黑</p>
+          <p>28. 阻挡悲剧蔓延的悲剧会让我沉醉</p>
+          <p>29. 低头亲吻我的左手 换取被宽恕的承诺</p>
+          <p>30. 老旧管风琴在角落 一直一直一直伴奏</p>
+          <p>31. 黑色帘幕被风吹动 阳光无言地穿透</p>
+          <p>32. 洒向那群被我驯服后的兽</p>
+          <p>33. 沉默地喊叫 沉默地喊叫 孤单开始发酵</p>
+          <p>34. 不停对着我嘲笑 回忆逐渐延烧</p>
+          <p>35. 曾经纯真的画面 残忍地温柔出现</p>
+          <p>36. 脆弱时间到 我们一起来祷告</p>
+          <p>37. 仁慈的父我已坠入 看不见罪的国度</p>
+          <p>38. 请原谅我的自负</p>
+          <p>39. Ah ya ya check it check it ah ya</p>
+          <p>40. 没人能说没人可说 好难承受</p>
+          <p>41. 荣耀的背后刻着一道孤独</p>
+          <p>42. Ah ya ya check it check it ah ya</p>
+          <p>43. 闭上双眼我又看见 当年那梦的画面</p>
+          <p>44. 天空是蒙蒙的雾</p>
+          <p>45. Ah ya ya check it check it ah ya</p>
+          <p>46. 父亲牵着我的双手 轻轻走过</p>
+          <p>47. 清晨那安安静静的石板路</p>
+          <p>48. Ah ya ya check it check it ah ya</p>
+          <p>49. Pie Jesu</p>
+          <p>50. Qui tollis peccata</p>
+          <p>51. Dona eis requiem ave...</p>
+          <p>52. 低头亲吻我的左手 换取被宽恕的承诺</p>
+          <p>53. 老旧管风琴在角落 一直一直一直伴奏</p>
+          <p>54. 黑色帘幕被风吹动 阳光无言地穿透</p>
+          <p>55. 洒向那群被我驯服后的兽</p>
+          <p>56. 沉默地喊叫 沉默地喊叫 孤单开始发酵</p>
+          <p>57. 不停对着我嘲笑 回忆逐渐延烧</p>
+          <p>58. 曾经纯真的画面 残忍地温柔出现</p>
+          <p>59. 脆弱时间到 我们一起来祷告</p>
+          <p>60. 仁慈的父我已坠入 看不见罪的国度</p>
+          <p>61. 请原谅我的自负</p>
+          <p>62. Ah ya ya check it check it ah ya</p>
+          <p>63. 没人能说没人可说 好难承受</p>
+          <p>64. 荣耀的背后刻着一道孤独</p>
+          <p>65. Ah ya ya check it check it ah ya</p>
+          <p>66. 仁慈的父 我已坠入</p>
+          <p>67. 看不见罪的国度</p>
+          <p>68. 请原谅我 我的自负</p>
+          <p>69. 刻着一道孤独</p>
+          <p>70. 仁慈的父我已坠入 看不见罪的国度</p>
+          <p>71. 请原谅我的自负</p>
+          <p>72. Ah ya ya check it check it ah ya</p>
+          <p>73. 没人能说没人可说 好难承受</p>
+          <p>74. 荣耀的背后刻着一道孤独</p>
+          <p>75. Ah ya ya check it check it ah ya</p>
+          <p>76. 斑驳的家徽 擦拭了一夜</p>
+          <p>77. 孤独的光辉 才懂的感觉</p>
+          <p>78. 烛光 不 不 停的摇晃</p>
+          <p>79. 猫头鹰在窗棂上 对着远方眺望</p>
+          <p>80. 通向大厅的长廊</p>
+          <p>81. 一样 说不出的沧桑</p>
+          <p>82. 没有喧嚣 只有宁静围绕</p>
+          <p>83. 我慢慢睡着 天刚刚破晓</p>
+          <p>84. Sia santificato il tuo nome</p>
+          <p>85. Sia fatta la tua volontà</p>
+          <p>86. Amen</p>
+        `;
+  box.innerHTML = p;
+  vib.begin(box);
+</script>
+</body>
+</html>
