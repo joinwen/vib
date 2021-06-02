@@ -47,7 +47,9 @@ class Phase extends Animation{
         let [y0, y1, time1] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
         let [x0, x1, time2] = this.momentum(this.x0, this.x1, this.startTime, this.maxX);
         let time =  Math.max(time1, time2);
-        this.animate([x0,x1],[y0,y1], time);
+        if(time) {
+          this.animate([x0,x1],[y0,y1], time);
+        }
       }
     }
     this.flag = 3;
