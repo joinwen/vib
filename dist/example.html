@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Example</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    body {
+      margin: 100px;
+      padding: 100px;
+      border: 10px solid green;
+    }
+    .wrapped {
+      width: 800px;
+      background-color: antiquewhite;
+      height: 500px;
+      margin: 100px;
+      padding: 100px;
+      overflow: auto;
+      border: 10px solid yellowgreen;
+    }
+    .box {
+      width: 200px;
+      height: 700px;
+      margin: 80px;
+      padding: 100px;
+      background-color: red;
+      border: 10px solid black;
+    }
+    .box2 {
+      height: 500px;
+      background-color: red;
+    }
+    .box3 {
+      height: 800px;
+      background-color: blueviolet;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapped">
+    <div class="box">
+      900
+    </div>
+    <div class="box2">
+      500
+    </div>
+    <div class="box3">
+      800
+    </div>
+  </div>
+  <script>
+    var wrapped = document.querySelector(".wrapped");
+    var box = document.querySelector(".box");
+    var box2 = document.querySelector(".box2");
+    var box3 = document.querySelector(".box3");
+    function getPageX(ele) {
+      let x = 0;
+      while (ele.offsetParent) {
+        x += ele.offsetLeft;
+        ele = ele.offsetParent;
+      }
+      return x;
+    }
+    function getPageY(ele) {
+      let y = 0;
+      while(ele.offsetParent) {
+        y += ele.offsetTop;
+        ele = ele.offsetParent;
+      }
+      return y;
+    }
+    function clientY(ele) {
+      let y = getPageY(ele),
+        top = wrapped.scrollTop,
+        pt = Number.parseInt(getStyle(wrapped,"padding-top")),
+        clientTop = wrapped.clientTop;
+      let dist = y - top;
+      return dist - getPageY(wrapped) - clientTop;
+      // return dist - clientTop;
+    }
+    function height(ele) {
+      let y = ele.offsetHeight;
+      let mt = getStyle(ele, "margin-top"),
+        mb = getStyle(ele,"margin-bottom");
+      return y + Number.parseInt(mb) + Number.parseInt(mt);
+    }
+    function getStyle(ele,attr) {
+      return document.defaultView.getComputedStyle(ele)[attr];
+    }
+    function handleChildShow(ele) {
+      let y = clientY(ele);
+      if(y <= 0) {
+        let res = y + ele.clientHeight;
+        if(res > 0) {
+          ele.style.backgroundColor = "blue";
+        } else {
+          ele.style.backgroundColor = "white";
+        }
+      } else {
+        if(y <= wrapped.clientHeight && y >= 0) {
+          ele.style.backgroundColor = "blue";
+        } else {
+          ele.style.backgroundColor = "white";
+        }
+      }
+    }
+    wrapped.addEventListener("scroll", (e) => {
+      let childList = e.target.children;
+      [...childList].forEach(child => {
+        handleChildShow(child);
+      })
+    })
+  </script>
+</body>
+</html>

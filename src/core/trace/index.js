@@ -74,7 +74,11 @@ class Trace extends Phase{
   }
   listen() {
     this.events.forEach(event => {
-      event[1].addEventListener(event[0], this);
+      let arr = [event[0]].flat(),
+        target = event[1];
+      arr.forEach(name => {
+        target.addEventListener(name, this);
+      });
     });
   }
 }

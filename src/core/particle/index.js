@@ -8,6 +8,7 @@ class Particle {
   constructor(child) {
     this.child = child;
     this.init();
+    this.initStyle();
   }
   init() {
     this.parent = this.child.parentElement;

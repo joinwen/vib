@@ -28,6 +28,12 @@ const getWidthAndHeightWithBorder = (ele) => {
   ];
 };
 
+const style2String = (style) => {
+  return Object.keys(style).reduce((prev,next) => {
+    return prev + `${next}: ${style[next]};`;
+  },"");
+};
+
 // eslint-disable-next-line no-undef
 const raf = window.requestAnimationFrame || function(callback) {
   // eslint-disable-next-line no-undef
@@ -120,13 +126,13 @@ class Animation {
         id = null,
         deltaX = x1 - x0,
         deltaY = y1 - y0;
-      console.log(progress);
+
       if(this.flag === 3) {
         if(progress < 1){
           this.translate(x0 + deltaX * progress,y0 + deltaY * progress);
           id = raf(fn);
         } else {
-          this.translate(x0 + deltaX, y0 + deltaY * progress);
+          this.translate(x0 + deltaX, y0 + deltaY);
           cancelRaf(id);
         }
       }
@@ -139,6 +145,7 @@ class Animation {
   translate(horValue, verValue) {
     this.y1 = Math.round(verValue);
     this.x1 = Math.round(horValue);
+    this.scrollbar.updatePosition(this.y1);
     setStyle(this.child, {
       transform: `translateY(${this.y1}px) translateX(${this.x1}px)`
     });
@@ -226,7 +233,9 @@ class Phase extends Animation{
         let [y0, y1, time1] = this.momentum(this.y0, this.y1, this.startTime, this.maxY);
         let [x0, x1, time2] = this.momentum(this.x0, this.x1, this.startTime, this.maxX);
         let time =  Math.max(time1, time2);
-        this.animate([x0,x1],[y0,y1], time);
+        if(time) {
+          this.animate([x0,x1],[y0,y1], time);
+        }
       }
     }
     this.flag = 3;
@@ -252,6 +261,9 @@ class Trace extends Phase{
   }
   get parent() {
     return this.p.parent;
+  }
+  get scrollbar() {
+    return this.p.scrollbar;
   }
   get maxY() {
     return this.p.maxY;
@@ -309,7 +321,11 @@ class Trace extends Phase{
   }
   listen() {
     this.events.forEach(event => {
-      event[1].addEventListener(event[0], this);
+      let arr = [event[0]].flat(),
+        target = event[1];
+      arr.forEach(name => {
+        target.addEventListener(name, this);
+      });
     });
   }
 }
@@ -392,6 +408,136 @@ class TouchTrace extends Trace{
   }
 }
 
+class Scrollbar {
+  constructor(p) {
+    let parent = p.parent,
+      child = p.child,
+      [parentWidth, parentHeight ] =getWidthAndHeight(parent),
+      [childWidth, childHeight] = getWidthAndHeightWithBorder(child);
+    this.ratioX = parentWidth / childWidth;
+    this.ratioY = parentHeight / childHeight;
+    this.height = this.ratioY * 100 + "%";
+    this.width = this.ratioX * 100 + "%";
+    this.startX = 0;
+    this.startY = 0;
+    this.x = 0;
+    this.y = 0;
+    this.flag = 0;
+    this.initDom(parent);
+    this.initEvents();
+  }
+  initDom(parent) {
+    let parentStyle = {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        right: "2px",
+        width: "6px",
+      },
+      childStyle = {
+        top: 0,
+        left: 0,
+        position: "absolute",
+        "box-sizing": "border-box",
+        height: this.height,
+        width: "100%",
+        "border-radius": "4px",
+        background: "#dddee0",
+      };
+    // eslint-disable-next-line no-undef
+    let div = document.createElement("div"),
+      html = `<div class="scroller-parent" style="${style2String(parentStyle)}">
+                <div class="scroller-child" style="${style2String(childStyle)}"></div>
+             </div>`;
+    div.innerHTML = html;
+    parent.append(div.firstChild);
+    // eslint-disable-next-line no-undef
+    this.ele = document.querySelector(".scroller-child");
+  }
+
+  initEvents() {
+    this.events = [
+      [["mousedown","pointerdown","touchstart"],this.ele],
+      // eslint-disable-next-line no-undef
+      [["mousemove","pointermove","touchmove"], window],
+      // eslint-disable-next-line no-undef
+      [["mouseup","pointerup","touchend"], window],
+      // eslint-disable-next-line no-undef
+      [["mousecancel","pointercancel","touchcancel"], window]
+    ];
+  }
+
+  updatePosition(value) {
+    value = this.ratioY * value;
+    this.translate(-value);
+  }
+  translate(value) {
+    this.y = value;
+    setStyle(this.ele, {
+      top: `${value}px`
+    });
+  }
+  listen() {
+    this.events.forEach(item => {
+      let [eventNames, target] = item;
+      eventNames.forEach(event => {
+        target.addEventListener(event, this);
+      });
+    });
+  }
+  handleEvent(event) {
+    switch (event.type) {
+    case "mousedown":
+    case "pointerdown":
+    case "touchstart":
+      {
+        this.flag = 1;
+        setStyle(this.ele,{
+          background: "#c7c9cc"
+        });
+        console.log(event);
+        this.startX = event.pageX;
+        this.startY = event.pageY;
+      }break;
+    case "mousemove":
+    case "pointermove":
+    case "touchmove":
+      {
+        if(this.flag === 1) {
+          let moveX = event.pageX,
+            moveY = event.pageY;
+            event.pageX - this.startX;
+            let deltaY = event.pageY - this.startY,
+            y = this.y + deltaY;
+          this.startX = moveX;
+          this.startY = moveY;
+          this.translate(y);
+        }
+      }break;
+    case "mouseup":
+    case "pointerup":
+    case "touchend":
+      {
+        this.flag = 3;
+        // console.log(event);
+        setStyle(this.ele, {
+          background: "#dddee0"
+        });
+      }break;
+    case "mousescroll":
+    case "pointercancel":
+    case "touchcancel":
+      {
+        this.flag = 3;
+        setStyle(this.ele, {
+          background: "#dddee0"
+        });
+        // console.log(event);
+      }break;
+    }
+  }
+}
+
 /**
  * Particle: 粒子
  */
@@ -399,6 +545,7 @@ class Particle {
   constructor(child) {
     this.child = child;
     this.init();
+    this.initStyle();
   }
   init() {
     this.parent = this.child.parentElement;
@@ -414,6 +561,7 @@ class Particle {
     this.startY = 0;  // 当前 y 起点
     this.flag = 0;  // 事件处理阶段，默认 0，not be traced
     this.startTime = Date.now();  // 开始时间
+    this.scrollbar = new Scrollbar(this);   // 滚动条
   }
   initStyle() {
     setStyle(this.child, {"user-select": "none"});
@@ -471,29 +619,62 @@ class WheelTrace extends Trace{
     event = this.unifyEvent(event);
     switch (event.type) {
     case "wheel": {
-      this.x1 + (-event.deltaX);
-        let y1 = this.y1 + (-event.deltaY);
-      if(y1 < this.maxY) {
-        y1 = this.maxY;
-      }
-      if(y1 > 0) {
-        y1 = 0;
-      }
-      this.translate(y1);
-      // if(Date.now() - this.startTime > 300) {
-      //   this.startTime = Date.now();
-      //   this.x0 = this.x1;
-      //   this.y0 = this.y1;
-      // }
+      let x1 = this.x1 + (-event.deltaX),
+        y1 = this.y1 + (-event.deltaY);
+      y1 = y1 < this.maxY ? this.maxY : y1 > 0 ? 0 : y1;
+      x1 = x1 < this.maxX ? this.maxX : x1 > 0 ? 0 : x1;
+      this.translate(x1, y1);
     }break;
     }
   }
   unifyEvent(event) {
-    // 1. 标准 鼠标滚轮事件
-    if("deltaX" in event) {
-      console.log(event);
-    }
     return event;
+  }
+}
+
+class ScrollbarTrace extends Trace {
+  constructor(p) {
+    super(p);
+    this.initEvents();
+  }
+  initEvents() {
+    this.events = [
+      [["mousedown","touchstart"],this.scrollbar.ele],
+      // eslint-disable-next-line no-undef
+      [["mousemove","touchmove"], window],
+      // eslint-disable-next-line no-undef
+      [["mouseup","touchend"], window],
+      // eslint-disable-next-line no-undef
+      [["mousecancel","touchcancel"], window]
+    ];
+  }
+  handleEvent(event) {
+    switch (event.type) {
+    case "mousedown":
+    case "pointerdown":
+    case "touchstart":
+      {
+        this.handleStart(event);
+      }break;
+    case "mousemove":
+    case "pointermove":
+    case "touchmove":
+      {
+        this.handleGoing(event);
+      }break;
+    case "mouseup":
+    case "pointerup":
+    case "touchend":
+      {
+        this.handleStop();
+      }break;
+    case "mousescroll":
+    case "pointercancel":
+    case "touchcancel":
+      {
+        this.handleCancel();
+      }break;
+    }
   }
 }
 
@@ -502,11 +683,13 @@ const vib = {
     let p = new Particle(ele);
     let mouseTrace = new MouseTrace(p),
       touchTrace = new TouchTrace(p),
-      wheelTrace = new WheelTrace(p);
+      wheelTrace = new WheelTrace(p),
+      scrollbarTrace = new ScrollbarTrace(p);
       new PointerTrace(p);
     mouseTrace.listen();
     touchTrace.listen();
     wheelTrace.listen();
+    scrollbarTrace.listen();
     // pointerTrace.listen();
   }
 };
