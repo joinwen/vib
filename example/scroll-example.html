@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Scroll Example</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      width: 100%;
+      height: 48px;
+      color: #fff;
+      line-height: 48px;
+      text-align: center;
+      background-color: yellowgreen;
+    }
+    .box {
+      top: 48px;
+      bottom: 0;
+      width: 100%;
+      line-height: 1.5;
+      text-align: center;
+      overflow: hidden;
+      position: absolute;
+    }
+    .content {
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+    .scroll {
+      position: absolute;
+      width: 6px;
+      height: 100%;
+      top: 0;
+      right: 2px;
+    }
+    .scroll-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 80px;
+      border-radius: 4px;
+      background-color: lightgray;
+      box-shadow: 0 0 1px 1px white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>我落泪 情绪零碎</h2>
+  </div>
+  <div class="box">
+    <div class="content">
+      <div class="content-list">
+        <p>
+          作词 : 方文山
+        </p>
+        <p>
+          作曲 : 周杰伦
+        </p>
+        <p>
+          编曲：钟兴民
+        </p>
+        <p>
+          制作人：周杰伦
+        </p>
+        <p>
+          弦乐编写：钟兴民
+        </p>
+        <p>
+          录音师：杨瑞代Gary
+        </p>
+        <p>
+          录音室：JVR Studio
+        </p>
+        <p>
+          混音工程：杨大纬录音工作室
+        </p>
+        <p>
+          地上 断了翅的蝶
+        </p>
+        <p>
+          雾散之后的 满月
+        </p>
+        <p>
+          原来爱 跟心碎
+        </p>
+        <p>
+          都可以很 细节
+        </p>
+        <p>
+          听夜风绕过 几条街
+        </p>
+        <p>
+          秋天瘦了满地 的落叶
+        </p>
+        <p>
+          于是又一整夜
+        </p>
+        <p>
+          感性的句子都枯萎 凋谢
+        </p>
+        <p>
+          我不想再写
+        </p>
+        <p>
+          随手撕下这一页
+        </p>
+        <p>
+          原来诗 跟离别
+        </p>
+        <p>
+          可以没有结尾（没有结尾）
+        </p>
+        <p>
+          憔悴后悔等等这些
+        </p>
+        <p>
+          于是我把诗折叠
+        </p>
+        <p>
+          邮寄出感觉 夹一束白玫瑰
+        </p>
+        <p>
+          你将爱退回
+        </p>
+        <p>
+          我不落泪 忍住感觉
+        </p>
+        <p>
+          分手在起风 这个季节
+        </p>
+        <p>
+          哭久了会累 也只是别人的以为
+        </p>
+        <p>
+          冷的咖啡 我清醒着 一再续杯
+        </p>
+        <p>
+          我落泪 情绪零碎
+        </p>
+        <p>
+          你的世界 一幕幕纷飞
+        </p>
+        <p>
+          门外的蔷薇 带刺伤人的很直接
+        </p>
+        <p>
+          过去被翻阅 结局满天的 风雪
+        </p>
+        <p>
+          我不想再写
+        </p>
+        <p>
+          随手撕下这一页（这一页）
+        </p>
+        <p>
+          原来诗 跟离别
+        </p>
+        <p>
+          可以没有结尾（没有结尾）
+        </p>
+        <p>
+          憔悴后悔等等 这些
+        </p>
+        <p>
+          于是我 把诗折叠
+        </p>
+        <p>
+          邮寄出感觉 夹一束白玫瑰
+        </p>
+        <p>
+          你将爱退回
+        </p>
+        <p>
+          我不落泪 忍住感觉
+        </p>
+        <p>
+          分手在起风 这个季节
+        </p>
+        <p>
+          哭久了会累 也只是别人的以为
+        </p>
+        <p>
+          冷的咖啡 我清醒着 一再续杯
+        </p>
+        <p>
+          我落泪 情绪零碎
+        </p>
+        <p>
+          你的世界 一幕幕纷飞
+        </p>
+        <p>
+          门外的蔷薇 带刺伤人的很直接
+        </p>
+        <p>
+          过去被翻阅 结局满天的 风雪
+        </p>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="scroll-bar"></div>
+    </div>
+  </div>
+  <script>
+    let box = document.querySelector(".box"),
+      content = document.querySelector(".content"),
+      scroll = document.querySelector(".scroll"),
+      scrollBar = document.querySelector(".scroll-bar");
+    const ratio = box.clientHeight / content.offsetHeight;
+    const scrollBarHeight = scroll.offsetHeight * ratio;
+    const maxY = scroll.offsetHeight - scrollBarHeight;
+    scrollBar.style.height = scrollBarHeight + "px";
+
+    const data = {
+      x: 0,
+      y: 0
+    }
+    scrollBar.addEventListener("mousedown", (e) => {
+      data.down = true;
+      data.startY = e.pageY;
+      data.startX = e.pageX;
+      if(data.down) {
+        document.onselectstart = (e) => {
+          e.preventDefault();
+        }
+      }
+    })
+    document.addEventListener("mousemove", (e) => {
+      if(!data.down)
+        return;
+      let moveX = e.pageX,
+        moveY = e.pageY;
+      data.deltaX = moveX - data.startX + data.x;
+      data.deltaY = moveY - data.startY + data.y;
+      data.deltaY = data.deltaY < 0 ? 0 : data.deltaY > maxY ? maxY : data.deltaY;
+      setStyle(scrollBar, "top", data.deltaY, "px");
+      setStyle(content, "top", data.deltaY / -1 * ratio, "px");
+    })
+    document.addEventListener("mouseup", (e) => {
+      data.down = false;
+      data.x = data.deltaX;
+      data.y = data.deltaY;
+    })
+
+    function setStyle(ele, attr, value, unit) {
+      ele.style[attr] = value + (unit || "");
+    }
+  </script>
+</body>
+</html>

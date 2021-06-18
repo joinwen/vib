@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Drag Example</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    .dialog {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 500px;
+      padding: 4px;
+      box-sizing: border-box;
+      border: 1px solid darkgrey;
+    }
+    .header {
+      height: 24px;
+      cursor: move;
+      text-align: center;
+      border: 1px solid darkgrey;
+      background-color: yellowgreen;
+    }
+    .main {
+      height: 200px;
+      line-height: 1.5;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dialog">
+    <div class="header">
+      Title
+    </div>
+    <div class="main">
+      <p>不能说的秘密</p>
+      <p>哎，我给你说个秘密喔</p>
+      <p>我。。。数过从琴房到教室，总共一百零八步</p>
+      <p>无聊</p>
+      <p>无聊就不要聊啊</p>
+      <p>好嘛，这我也数过，从我这到你那边，一共五步</p>
+    </div>
+  </div>
+  <script>
+
+    let header = document.querySelector(".header"),
+      dialog = document.querySelector(".dialog"),
+      data = {
+        y: 100,
+        x: 100,
+        deltaX: 0,
+        deltaY: 0
+      };
+    setStyle(dialog, "top", data.y);
+    setStyle(dialog, "left", data.x)
+    header.addEventListener("mousedown", (e) => {
+      e = e || window.event;
+      data.startX = e.pageX;
+      data.startY = e.pageY;
+      data.down = true;
+      document.onselectstart = (e) => {
+        if(data.down) {
+          e.preventDefault();
+        }
+      }
+    })
+    document.addEventListener("mousemove", (e) => {
+      e = e || window.event;
+      if(!data.down)
+        return;
+      let moveY = e.pageY,
+        moveX = e.pageX;
+      data.deltaY =  moveY - data.startY + data.y;
+      data.deltaX = moveX - data.startX + data.x;
+      setStyle(dialog, "top", data.deltaY);
+      setStyle(dialog, "left", data.deltaX);
+    })
+    document.addEventListener("mouseup", (e) => {
+      data.down = false;
+      data.y = data.deltaY;
+      data.x = data.deltaX;
+    })
+    function setStyle(ele, attr, value) {
+      ele.style[attr] = (value) + "px";
+    }
+  </script>
+</body>
+</html>

@@ -12,9 +12,9 @@ const vib = {
       wheelTrace = new WheelTrace(p),
       scrollbarTrace = new ScrollbarTrace(p),
       pointerTrace = new PointerTrace(p);
-    mouseTrace.listen();
-    touchTrace.listen();
-    wheelTrace.listen();
+    // mouseTrace.listen();
+    // touchTrace.listen();
+    // wheelTrace.listen();
     scrollbarTrace.listen();
     // pointerTrace.listen();
   }
