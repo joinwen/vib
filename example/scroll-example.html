@@ -32,6 +32,7 @@
       position: absolute;
       top: 0;
       width: 100%;
+      background-color: gray;
     }
     .scroll {
       position: absolute;
@@ -50,6 +51,9 @@
       background-color: lightgray;
       box-shadow: 0 0 1px 1px white;
       cursor: pointer;
+    }
+    .scroll-bar:hover {
+      background-color: rgba(100,100,100, .5) !important;
     }
   </style>
 </head>
@@ -204,6 +208,52 @@
         <p>
           过去被翻阅 结局满天的 风雪
         </p>
+        <p>
+          随手撕下这一页（这一页）
+        </p>
+        <p>
+          原来诗 跟离别
+        </p>
+        <p>
+          可以没有结尾（没有结尾）
+        </p>
+        <p>
+          憔悴后悔等等 这些
+        </p>
+        <p>
+          于是我 把诗折叠
+        </p>
+        <p>
+          邮寄出感觉 夹一束白玫瑰
+        </p>
+        <p>
+          你将爱退回
+        </p>
+        <p>
+          我不落泪 忍住感觉
+        </p>
+        <p>
+          分手在起风 这个季节
+        </p>
+        <p>
+          哭久了会累 也只是别人的以为
+        </p>
+        <p>
+          冷的咖啡 我清醒着 一再续杯
+        </p>
+        <p>
+          我落泪 情绪零碎
+        </p>
+        <p>
+          你的世界 一幕幕纷飞
+        </p>
+        <p>
+          门外的蔷薇 带刺伤人的很直接
+        </p>
+        <p>
+          过去被翻阅 结局满天的 风雪
+        </p>
+        <p>ending...</p>
       </div>
     </div>
     <div class="scroll">
@@ -215,19 +265,40 @@
       content = document.querySelector(".content"),
       scroll = document.querySelector(".scroll"),
       scrollBar = document.querySelector(".scroll-bar");
-    const ratio = box.clientHeight / content.offsetHeight;
-    const scrollBarHeight = scroll.offsetHeight * ratio;
-    const maxY = scroll.offsetHeight - scrollBarHeight;
-    scrollBar.style.height = scrollBarHeight + "px";
+    const ratioY = content.offsetHeight / box.clientHeight;
+    const ratioX = content.offsetWidth / box.clientWidth;
+
+    const scrollBarHeight = scroll.offsetHeight / ratioY;
+    const scrollBarWidth = scroll.offsetWidth / ratioX;
+
+    const maxY1 = scroll.offsetHeight - scrollBarHeight;
+    const maxY2 = box.clientHeight - content.offsetHeight;
+    const maxYRatio = maxY1 / maxY2;
+
+    const maxX1 = scroll.offsetWidth - scrollBarWidth;
+    const maxX2 = box.clientWidth - content.offsetWidth;
+    const maxXRatio = maxX1 / maxX2;
+
 
     const data = {
       x: 0,
-      y: 0
+      y: 0,
+      enableX: false,
+      enableY: false
+    }
+    if(maxXRatio != NaN) {
+      data.enableX = true;
+      scrollBar.style.height = scrollBarWidth + "px";
+    }
+    if(maxYRatio != NaN) {
+      data.enableY = true;
+      scrollBar.style.height = scrollBarHeight + "px";
     }
     scrollBar.addEventListener("mousedown", (e) => {
       data.down = true;
       data.startY = e.pageY;
       data.startX = e.pageX;
+      scrollBar.style.backgroundColor = "rgba(100,100,100, .5)";
       if(data.down) {
         document.onselectstart = (e) => {
           e.preventDefault();
@@ -241,14 +312,36 @@
         moveY = e.pageY;
       data.deltaX = moveX - data.startX + data.x;
       data.deltaY = moveY - data.startY + data.y;
-      data.deltaY = data.deltaY < 0 ? 0 : data.deltaY > maxY ? maxY : data.deltaY;
-      setStyle(scrollBar, "top", data.deltaY, "px");
-      setStyle(content, "top", data.deltaY / -1 * ratio, "px");
+      data.deltaY = data.deltaY < 0 ? 0 : data.deltaY > maxY1 ? maxY1 : data.deltaY;
+      data.deltaX = data.deltaX < 0 ? 0 : data.deltaX > maxX1 ? maxX1 : data.deltaX;
+      if(data.enableY) {
+        setStyle(scrollBar, "top", data.deltaY, "px");
+        setStyle(content, "top", data.deltaY / maxYRatio, "px");
+      }
+      if(data.enableX) {
+
+      }
     })
     document.addEventListener("mouseup", (e) => {
       data.down = false;
       data.x = data.deltaX;
       data.y = data.deltaY;
+      scrollBar.style.backgroundColor = "lightgray";
+    })
+    content.addEventListener("wheel", (e) => {
+      let y = data.y / maxYRatio;
+      let y1 = y + (-e.deltaY);
+      y1 = y1 < maxY2 ? maxY2 : y1 > 0 ? 0 : y1;
+      data.y = y1 * maxYRatio;
+      if(data.enableY) {
+        setStyle(content, "top", y1, "px");
+        setStyle(scrollBar, "top", data.y, "px");
+      }
+      if(data.enableX) {
+
+
+        
+      }
     })
 
     function setStyle(ele, attr, value, unit) {
